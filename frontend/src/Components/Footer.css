@@ -1,0 +1,31 @@
+/* Footer Background & Text */
+footer {
+  background-color: #343a40; /* Dark Gray */
+  color: white;
+  padding: 15px 0;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Footer Links */
+footer a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease-in-out;
+}
+
+footer a:hover {
+  color: #ffcc00; /* Yellow Hover */
+  text-decoration: underline;
+}
+
+/* Centering for Small Screens */
+@media (max-width: 768px) {
+  footer .row {
+    text-align: center;
+  }
+
+  footer .col-md-6 {
+    margin-bottom: 10px;
+  }
+}

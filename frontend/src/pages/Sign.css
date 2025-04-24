@@ -1,0 +1,57 @@
+/* Background & Centering */
+.signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to right, #141e30, #243b55);
+  }
+  
+  /* Form Box */
+  .form-box {
+    background-color: #222;
+    color: white;
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Input Fields */
+  .form-control {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    transition: border 0.3s ease-in-out;
+  }
+  
+  .form-control:focus {
+    border-color: #ffcc00;
+  }
+  
+  /* Gender Selection */
+  .gender-options {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* Button Styling */
+  .btn-warning {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .btn-warning:hover {
+    transform: scale(1.05);
+    background-color: #ffb300;
+  }
+  
+  /* Error Message */
+  .alert-danger {
+    background-color: #d9534f;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  

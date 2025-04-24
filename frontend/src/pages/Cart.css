@@ -1,0 +1,82 @@
+/* 📌 Full Page Background */
+body {
+    background: linear-gradient(to right, #1f1c2c, #928dab);
+    color: white;
+  }
+  
+  /* 📌 Cart Container */
+  .cart-container {
+    padding: 40px 0;
+  }
+  
+  /* 📌 Table Styling */
+  .table {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  /* 📌 Cart Image */
+  .cart-img {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .cart-img:hover {
+    transform: scale(1.2);
+  }
+  
+  /* 📌 Buttons */
+  .btn-warning {
+    transition: transform 0.3s, background-color 0.3s;
+  }
+  
+  .btn-warning:hover {
+    background-color: #ffcc00;
+    transform: scale(1.1);
+  }
+  
+  /* 📌 Remove Button */
+  .btn-danger {
+    transition: transform 0.3s, background-color 0.3s;
+  }
+  
+  .btn-danger:hover {
+    background-color: #ff4d4d;
+    transform: scale(1.1);
+  }
+  
+  /* 📌 Save for Later Button */
+  .btn-outline-info {
+    transition: transform 0.3s, background-color 0.3s;
+  }
+  
+  .btn-outline-info:hover {
+    background-color: #17a2b8;
+    color: white;
+    transform: scale(1.1);
+  }
+  
+  /* 📌 Promo Code Input */
+  .promo-input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #ffcc00;
+    color: white;
+    padding: 10px;
+  }
+  
+  .promo-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  /* 📌 Cart Summary */
+  .card-summary {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+  

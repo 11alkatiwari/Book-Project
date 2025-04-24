@@ -1,0 +1,33 @@
+.Logincontainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to right, #141e30, #243b55);
+  }
+  
+  .card {
+    background-color: #222;
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+  }
+  
+  .form-control {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+  }
+  
+  .form-control::placeholder {
+    color: #bbb;
+  }
+  
+  .btn-warning {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .btn-warning:hover {
+    transform: scale(1.05);
+  }
+  

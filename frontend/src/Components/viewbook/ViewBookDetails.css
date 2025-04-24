@@ -1,0 +1,28 @@
+/* Book Cover Styling */
+.book-cover {
+    height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .book-cover:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Button Styling */
+  .btn-outline-danger {
+    transition: background-color 0.3s ease-in-out;
+  }
+  .btn-outline-danger:hover {
+    background-color: red;
+    color: white;
+  }
+  
+  .btn-warning {
+    transition: transform 0.3s ease-in-out;
+  }
+  .btn-warning:hover {
+    transform: scale(1.1);
+  }
+  
