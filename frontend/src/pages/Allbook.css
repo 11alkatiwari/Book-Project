@@ -11,6 +11,9 @@ body {
   padding: 15px;
   text-align: center;
   transition: transform 0.3s ease-in-out;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
 }
 
 .book-card:hover {

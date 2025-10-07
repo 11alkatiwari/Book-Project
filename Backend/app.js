@@ -2,12 +2,13 @@ require('dotenv').config(); // Load .env file
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+
 const user = require('./routes/user');
-const Book = require('./models/book'); // Import Book model
-const book = require ("./routes/book");
-const favourites = require ("./routes/favourites");
-const cart = require("./routes/cart");
-const order = require("./routes/order");
+const book = require('./routes/book');
+const favourites = require('./routes/favourites');
+const cart = require('./routes/cart');
+const order = require('./routes/order');
+
 const app = express();
 
 app.use(express.json());
@@ -20,23 +21,9 @@ console.log("MONGO_URI:", process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
-}).then(() => console.log("✅ MongoDB Connected"))
-  .catch(err => console.error("❌ MongoDB Connection Failed:", err));
-
-// ✅ Add Sample Books (if needed)
-app.post("/api/v1/add-sample-books", async (req, res) => {
-  const sampleBooks = [
-    { title: "Harry Potter", author: "J.K. Rowling", price: "19.99", image: "https://m.media-amazon.com/images/I/81YOuOGFCJL.jpg", category: "Fantasy" },
-    { title: "Atomic Habits", author: "James Clear", price: "14.99", image: "https://m.media-amazon.com/images/I/91bYsX41DVL.jpg", category: "Self-Help" }
-  ];
-  try {
-    await Book.insertMany(sampleBooks); // Insert sample books into the database
-
-    res.json({ status: "success", message: "Books added successfully!" });
-  } catch (error) {
-    res.status(500).json({ status: "error", message: "Failed to add books." });
-  }
-});
+})
+.then(() => console.log("✅ MongoDB Connected"))
+.catch(err => console.error("❌ MongoDB Connection Failed:", err));
 
 // ✅ Routes
 app.use("/api/v1/userAuth", require("./routes/userAuth"));
@@ -47,6 +34,7 @@ app.use("/api/v1", cart);
 app.use("/api/v1", order);
 
 // ✅ Start Server
-app.listen(5000, () => {
-  console.log("🚀 Server running on port 5000");
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });

@@ -1,77 +1,79 @@
-import React, { useState } from "react";
-import "./Cart.css"; // ✅ Import Custom CSS
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "./Cart.css";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      title: "Atomic Habits",
-      author: "James Clear",
-      price: 599,
-      image: "https://m.media-amazon.com/images/I/91bYsX41DVL.jpg",
-      quantity: 2,
-      deliveryDate: "3-5 days",
-    },
-    {
-      id: 2,
-      title: "Harry Potter",
-      author: "J.K. Rowling",
-      price: 899,
-      image: "https://m.media-amazon.com/images/I/81YOuOGFCJL.jpg",
-      quantity: 1,
-      deliveryDate: "5-7 days",
-    },
-  ]);
-
+  const [cartItems, setCartItems] = useState([]);
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
-  const [savedItems, setSavedItems] = useState([]);
-  const shippingCharge = 50; // 🚚 Flat Shipping Charge
+  const shippingCharge = 50;
+
+  // ✅ Get userId from localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?._id || user?.id;
+
+  // ✅ Fetch Cart Items
+  const fetchCartItems = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/v1/cart/${userId}`);
+      if (res.data.success) {
+        setCartItems(res.data.cart);
+      }
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (userId) fetchCartItems();
+  }, [userId]);
 
   // ✅ Increase Quantity
-  const increaseQuantity = (id) => {
-    setCartItems(cartItems.map(item =>
-      item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-    ));
+  const increaseQuantity = async (item) => {
+    const newQty = item.quantity + 1;
+    await axios.put(`http://localhost:5000/api/v1/cart/update`, {
+      cartItemId: item._id,
+      quantity: newQty,
+    });
+    fetchCartItems();
   };
 
   // ✅ Decrease Quantity
-  const decreaseQuantity = (id) => {
-    setCartItems(cartItems.map(item =>
-      item.id === id && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
-    ));
+  const decreaseQuantity = async (item) => {
+    if (item.quantity > 1) {
+      const newQty = item.quantity - 1;
+      await axios.put(`http://localhost:5000/api/v1/cart/update`, {
+        cartItemId: item._id,
+        quantity: newQty,
+      });
+      fetchCartItems();
+    }
   };
 
-  // ✅ Remove Item from Cart
-  const removeFromCart = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
-  };
-
-  // ✅ Save for Later
-  const saveForLater = (id) => {
-    const itemToSave = cartItems.find(item => item.id === id);
-    setSavedItems([...savedItems, itemToSave]);
-    removeFromCart(id);
+  // ✅ Remove from Cart
+  const removeFromCart = async (id) => {
+    await axios.delete(`http://localhost:5000/api/v1/cart/${id}`);
+    fetchCartItems();
   };
 
   // ✅ Apply Promo Code
   const applyPromoCode = () => {
-    if (promoCode === "SAVE10") {
-      setDiscount(10);
-    } else {
-      setDiscount(0);
-    }
+    if (promoCode === "SAVE10") setDiscount(10);
+    else setDiscount(0);
   };
 
-  // ✅ Calculate Total Price
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  // ✅ Calculate totals
+  const subtotal = cartItems.reduce(
+    (total, item) => total + item.bookId.price * item.quantity,
+    0
+  );
   const totalPrice = subtotal - (subtotal * discount) / 100 + shippingCharge;
 
   return (
     <div className="container py-5">
       <h2 className="text-center text-warning">Your Cart</h2>
 
-      {cartItems.length === 0 ? (
+      {!cartItems.length ? (
         <p className="text-center text-light">Your cart is empty.</p>
       ) : (
         <div className="row">
@@ -83,25 +85,46 @@ const Cart = () => {
                   <th>Title</th>
                   <th>Quantity</th>
                   <th>Price</th>
-                  <th>Delivery</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {cartItems.map(item => (
-                  <tr key={item.id}>
-                    <td><img src={item.image} alt={item.title} className="cart-img" /></td>
-                    <td>{item.title} <br /><small>by {item.author}</small></td>
+                {cartItems.map((item) => (
+                  <tr key={item._id}>
                     <td>
-                      <button className="btn btn-sm btn-warning" onClick={() => decreaseQuantity(item.id)}>-</button>
-                      <span className="mx-2">{item.quantity}</span>
-                      <button className="btn btn-sm btn-warning" onClick={() => increaseQuantity(item.id)}>+</button>
+                      <img
+                        src={item.bookId.image}
+                        alt={item.bookId.title}
+                        className="cart-img"
+                      />
                     </td>
-                    <td>₹{item.price * item.quantity}</td>
-                    <td>{item.deliveryDate}</td>
                     <td>
-                      <button className="btn btn-outline-info btn-sm me-2" onClick={() => saveForLater(item.id)}>⭐ Save</button>
-                      <button className="btn btn-danger btn-sm" onClick={() => removeFromCart(item.id)}>🗑 Remove</button>
+                      {item.bookId.title} <br />
+                      <small>by {item.bookId.author}</small>
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-sm btn-warning"
+                        onClick={() => decreaseQuantity(item)}
+                      >
+                        -
+                      </button>
+                      <span className="mx-2">{item.quantity}</span>
+                      <button
+                        className="btn btn-sm btn-warning"
+                        onClick={() => increaseQuantity(item)}
+                      >
+                        +
+                      </button>
+                    </td>
+                    <td>₹{item.bookId.price * item.quantity}</td>
+                    <td>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => removeFromCart(item._id)}
+                      >
+                        🗑 Remove
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -116,29 +139,29 @@ const Cart = () => {
               <p>Subtotal: ₹{subtotal}</p>
               <p>Shipping: ₹{shippingCharge}</p>
               <p>Discount: {discount}%</p>
-              <h5 className="text-success">Final Total: ₹{totalPrice.toFixed(2)}</h5>
+              <h5 className="text-success">
+                Final Total: ₹{totalPrice.toFixed(2)}
+              </h5>
 
-              {/* Promo Code */}
-              <input type="text" className="form-control mb-2" placeholder="Enter Promo Code" value={promoCode} onChange={(e) => setPromoCode(e.target.value)} />
-              <button className="btn btn-outline-success w-100 mb-2" onClick={applyPromoCode}>Apply Promo</button>
+              <input
+                type="text"
+                className="form-control mb-2"
+                placeholder="Enter Promo Code"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value)}
+              />
+              <button
+                className="btn btn-outline-success w-100 mb-2"
+                onClick={applyPromoCode}
+              >
+                Apply Promo
+              </button>
 
-              <button className="btn btn-success w-100">Proceed to Checkout</button>
+              <button className="btn btn-success w-100">
+                Proceed to Checkout
+              </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Saved for Later */}
-      {savedItems.length > 0 && (
-        <div className="mt-4">
-          <h4 className="text-warning">Saved for Later</h4>
-          <ul className="list-group">
-            {savedItems.map(item => (
-              <li className="list-group-item bg-dark text-light">
-                {item.title} - ₹{item.price}  
-              </li>
-            ))}
-          </ul>
         </div>
       )}
     </div>

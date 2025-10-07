@@ -2,6 +2,10 @@ const router = require("express").Router();
 const { authenticateToken } = require("./userAuth");
 const User = require("../models/user"); 
 
+// axios.post("http://localhost:5000/api/v1/add-to-favourite", {
+//   userId,
+//   bookId: book._id
+// });
 router.put("/add-favourite", async (req, res) => {
     try {
         const { bookid } = req.body; 

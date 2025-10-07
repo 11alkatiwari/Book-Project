@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { fetchBooks } from "./store/booksSlice";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import Home from "./pages/Home";
@@ -10,39 +12,28 @@ import Cart from "./pages/Cart";
 import Profile from "./pages/Profile";
 import ViewBookDetails from "./Components/viewbook/ViewBookDetails";
 import AddBook from "./pages/AddBook";
-import axios from "axios";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Policy from "./pages/Policy";
 
 const App = () => {
-  const [books, setBooks] = useState([]);
-
-  // ✅ Fetch books from backend
-  const fetchBooks = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/v1/get-all-books");
-      setBooks(response.data.data);
-    } catch (error) {
-      console.error("❌ Error fetching books:", error);
-    }
-  };
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    fetchBooks(); // Load books when app starts
-  }, []);
+    dispatch(fetchBooks()); // Load books when app starts
+  }, [dispatch]);
 
   return (
     <>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/Allbook" element={<Allbook books={books} refreshBooks={fetchBooks} />} />
+        <Route path="/Allbook" element={<Allbook />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/Profile" element={<Profile />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Sign" element={<Sign />} />
-        <Route path="/AddBook" element={<AddBook refreshBooks={fetchBooks} />} />
+        <Route path="/AddBook" element={<AddBook />} />
         <Route path="/view-book-details/:id" element={<ViewBookDetails />} />
         <Route path="/About" element={<About />} />
         <Route path="/Contact" element={<Contact />} />

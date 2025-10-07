@@ -1,69 +1,112 @@
-const router = require("express").Router();
+const express = require("express");
+const router = express.Router();
 const { User } = require("../models/user");
 const { authenticateToken } = require("./userAuth");
 
-router.put("/add to cart",  async (req, res) => {
-    try {
-        const {bookid, id} = req.headers;
-        const userData = await User.findById(id);
-        const isBookinCart= userData.cart.includes(bookid);
-        if (isBookinCart) {
-            return res.json({
-                status:"success",
-                message: "Book is already in your cart",
-            });
-            await User.findByIdAndUpdate(id,
-                {
-                    $push: { cart: bookid },
-                });
-                return res.json({
-                    status: "success",
-                    message: "Book added to cart",
-                });
-        }
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            message: "An error occurred"
-        });
-        
+// ✅ Add Book to Cart
+router.post("/add-to-cart", async (req, res) => {
+  try {
+    const { userId, bookId } = req.body;
+
+    if (!userId || !bookId) {
+      return res.status(400).json({
+        success: false,
+        message: "❌ userId and bookId are required",
+      });
     }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "❌ User not found",
+      });
+    }
+
+    // Check if book already in cart
+    const isBookInCart = user.cart.includes(bookId);
+    if (isBookInCart) {
+      return res.json({
+        success: true,
+        message: "📚 Book is already in your cart",
+      });
+    }
+
+    // Add book to cart
+    await User.findByIdAndUpdate(userId, { $push: { cart: bookId } });
+
+    return res.json({
+      success: true,
+      message: "✅ Book added to cart successfully",
+    });
+  } catch (error) {
+    console.error("❌ Error adding to cart:", error);
+    return res.status(500).json({
+      success: false,
+      message: "❌ Internal Server Error",
+      error: error.message,
+    });
+  }
 });
 
-router.put("/remove from cart/:bookid",  async (req, res) => {
-    try {
-        const {bookid} = req.params;
-        const {id} = req.headers;
-        await User.findByIdAndUpdate(id, {
-            $pull: {cart: bookid},
-        });
-            return res.json({
-                status:"success",
-                message: "Book is already in your cart",
-            });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            message: "An error occurred"
-        });
-        }
+// ✅ Remove Book from Cart
+router.delete("/remove-from-cart/:bookId", async (req, res) => {
+  try {
+    const { userId } = req.body; // userId should come from body
+    const { bookId } = req.params;
+
+    if (!userId || !bookId) {
+      return res.status(400).json({
+        success: false,
+        message: "❌ userId and bookId are required",
+      });
+    }
+
+    await User.findByIdAndUpdate(userId, { $pull: { cart: bookId } });
+
+    return res.json({
+      success: true,
+      message: "🗑️ Book removed from cart successfully",
+    });
+  } catch (error) {
+    console.error("❌ Error removing from cart:", error);
+    return res.status(500).json({
+      success: false,
+      message: "❌ Internal Server Error",
+      error: error.message,
+    });
+  }
 });
 
-router.get("/get user cart",  async (req, res) => {
-    try {
-        const {id} = req.headers;
-        const userData = await User.findById(id).populate("cart");
-        const cart = userData.cart.reverse();
-        
-            return res.json({
-                status:"success",
-                message: "Book is already in your cart",
-            });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            message: "An error occurred"
-        });
-        }
+// ✅ Get User Cart
+router.get("/get-user-cart/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId).populate("cart");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "❌ User not found",
+      });
+    }
+
+    const cart = user.cart.reverse();
+
+    return res.json({
+      success: true,
+      message: "🛒 Cart fetched successfully",
+      cart,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching cart:", error);
+    return res.status(500).json({
+      success: false,
+      message: "❌ Internal Server Error",
+      error: error.message,
+    });
+  }
 });
+
 module.exports = router;
